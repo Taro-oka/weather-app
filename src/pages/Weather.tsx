@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ja";
+import axios from "axios";
 
 type WeatherItem = {
   dt: number;
@@ -16,7 +17,7 @@ type Status =
   | { state: "idle" }
   | { state: "loading" }
   | { state: "success"; city: string; items: WeatherItem[] }
-  | { state: "error"; message: string };
+  | { state: "error"; message: string; code: "not_found" | "client" | "server" };
 
 export default function Weather() {
   const [searchParams] = useSearchParams();
@@ -47,8 +48,34 @@ export default function Weather() {
         });
       } catch (error) {
         if (!isMounted) return;
-        const message = error instanceof Error ? error.message : "Unknown error";
-        setStatus({ state: "error", message });
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          if (status === 404) {
+            setStatus({
+              state: "error",
+              message: "見つかりません",
+              code: "not_found",
+            });
+          } else if (status && status >= 400 && status < 500) {
+            setStatus({
+              state: "error",
+              message: "リクエストに問題があります",
+              code: "client",
+            });
+          } else {
+            setStatus({
+              state: "error",
+              message: "サーバーで問題が発生しました",
+              code: "server",
+            });
+          }
+          return;
+        }
+        setStatus({
+          state: "error",
+          message: "不明なエラーが発生しました",
+          code: "server",
+        });
       }
     };
 
@@ -62,8 +89,10 @@ export default function Weather() {
   if (status.state === "error") {
     return (
       <section className="flex min-h-[60vh] flex-col items-center justify-center space-y-2 text-center">
-        <p className="text-6xl font-bold text-slate-200">500</p>
-        <p className="text-lg text-slate-300">Server error. Please try again.</p>
+        <p className="text-6xl font-bold text-slate-200">
+          {status.code === "not_found" ? "404" : status.code === "client" ? "400" : "500"}
+        </p>
+        <p className="text-lg text-slate-300">{status.message}</p>
       </section>
     );
   }
