@@ -22,6 +22,7 @@ type Status =
 export default function Weather() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "Tokyo";
+  const forcedError = searchParams.get("forceError");
   const [status, setStatus] = useState<Status>({ state: "idle" });
 
   dayjs.extend(utc);
@@ -33,6 +34,14 @@ export default function Weather() {
 
     const fetchWeather = async () => {
       setStatus({ state: "loading" });
+      if (forcedError === "500") {
+        setStatus({
+          state: "error",
+          message: "サーバーで問題が発生しました",
+          code: "server",
+        });
+        return;
+      }
       try {
         const data = await getWeather({ q: query });
         if (!isMounted) return;
@@ -84,14 +93,14 @@ export default function Weather() {
     return () => {
       isMounted = false;
     };
-  }, [query]);
+  }, [query, forcedError]);
 
   if (status.state === "error") {
+    const statusCode = status.code === "not_found" ? 404 : status.code === "client" ? 400 : 500;
     return (
       <section className="flex min-h-[60vh] flex-col items-center justify-center space-y-2 text-center">
-        <p className="text-6xl font-bold text-slate-200">
-          {status.code === "not_found" ? "404" : status.code === "client" ? "400" : "500"}
-        </p>
+        <p className="text-6xl font-bold text-slate-200">{statusCode}</p>
+        <p className="text-sm uppercase tracking-[0.4em] text-slate-400">Status Code</p>
         <p className="text-lg text-slate-300">{status.message}</p>
       </section>
     );
