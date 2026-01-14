@@ -9,10 +9,10 @@ function Header() {
         <h1 className="text-lg font-semibold tracking-wide">Weather App</h1>
         <nav className="flex items-center gap-2">
           <Link className={linkClass} to="/">
-            Home
+            ホーム
           </Link>
           <Link className={linkClass} to="/weather">
-            Weather
+            東京の天気
           </Link>
         </nav>
       </div>
