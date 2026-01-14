@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Placeholder for future external API calls from the frontend.
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://api.example.com",
+  baseURL: import.meta.env.VITE_OPEN_WEATHER_BASE_URL || "https://api.openweathermap.org",
 });
 
 export default client;
