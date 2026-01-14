@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "@/pages/Home";
-import Weather from "@/pages/Weather";
+import Home from "@/pages/home/Home";
+import Weather from "@/pages/weather/Weather";
 
 export default function AppRoutes() {
   return (
