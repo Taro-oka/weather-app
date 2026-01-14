@@ -1,5 +1,5 @@
 import client from "./client";
-import { ForecastResponseSchema } from "../types/weather";
+import { ForecastResponseSchema } from "@/types/weather";
 
 export async function getWeather({ q }: { q: string }) {
   const apiKey = import.meta.env.VITE_OPEN_WEATHER_API_KEY;

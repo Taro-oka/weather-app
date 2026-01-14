@@ -1,6 +1,6 @@
 import { Link, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Weather from "./pages/Weather";
+import Home from "@/pages/Home";
+import Weather from "@/pages/Weather";
 
 const linkClass = "rounded-md px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800";
 
