@@ -1,6 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getWeather } from "@/api/weather";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/ja";
 
 type WeatherItem = {
   dt: number;
@@ -19,15 +23,9 @@ export default function Weather() {
   const query = searchParams.get("q") ?? "Tokyo";
   const [status, setStatus] = useState<Status>({ state: "idle" });
 
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        dateStyle: "medium",
-        timeStyle: "short",
-      }),
-    []
-  );
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  dayjs.locale("ja");
 
   useEffect(() => {
     let isMounted = true;
@@ -96,7 +94,7 @@ export default function Weather() {
                 </div>
                 <div className="flex flex-1 flex-col sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-slate-200">
-                    {dateFormatter.format(new Date(item.dt * 1000))}
+                    {dayjs.unix(item.dt).tz("Asia/Tokyo").format("YYYY/MM/DD HH:mm")}
                   </span>
                   <span className="text-lg font-semibold text-slate-100">
                     {item.temp.toFixed(1)}°C
