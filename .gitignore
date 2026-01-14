@@ -3,7 +3,6 @@ dist/
 dist-ssr/
 *.local
 .env
-.env.*
 *.log
 .DS_Store
 thumbs.db
