@@ -12,6 +12,7 @@ export default function Home() {
             { label: "兵庫", query: "Hyogo" },
             { label: "大分", query: "Oita" },
             { label: "北海道", query: "Hokkaido" },
+            { label: "存在しない町", query: "XXXX" },
           ].map((city) => (
             <li key={city.query}>
               <Link
