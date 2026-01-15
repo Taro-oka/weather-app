@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Panel from "@/components/common/Panel";
 
 const CITIES = [
   { label: "東京", query: "Tokyo" },
@@ -9,10 +10,10 @@ const CITIES = [
 
 export default function HomeCityPanel() {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+    <Panel>
       <div className="flex items-baseline justify-between">
         <h3 className="text-lg font-semibold">都市</h3>
-        <span className="text-xs uppercase tracking-[0.3em] text-slate-500">Pick a city</span>
+        <span className="text-xs uppercase tracking-[0.3em] text-slate-500">都市を選んでください</span>
       </div>
       <ul className="mt-3 grid gap-2 sm:grid-cols-2">
         {CITIES.map((city) => (
@@ -26,6 +27,6 @@ export default function HomeCityPanel() {
           </li>
         ))}
       </ul>
-    </div>
+    </Panel>
   );
 }

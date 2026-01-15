@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ja";
+import Panel from "@/components/common/Panel";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,7 +28,7 @@ export default function WeatherForecastPanel({ query, status }: WeatherForecastP
   return (
     <section className="space-y-4">
       <h2 className="text-3xl font-bold">天気</h2>
-      <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+      <Panel>
         <div className="flex items-baseline justify-between">
           <h3 className="text-lg font-semibold">予報</h3>
           <span className="text-sm text-slate-400">都市: {query}</span>
@@ -60,7 +61,7 @@ export default function WeatherForecastPanel({ query, status }: WeatherForecastP
             ))}
           </ul>
         )}
-      </div>
+      </Panel>
     </section>
   );
 }
