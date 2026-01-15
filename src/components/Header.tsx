@@ -11,9 +11,6 @@ export default function Header() {
           <Link className={linkClass} to="/">
             ホーム
           </Link>
-          <Link className={linkClass} to="/weather">
-            東京の天気
-          </Link>
         </nav>
       </div>
     </header>
