@@ -28,13 +28,13 @@ export default function Weather() {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-3xl font-bold">Weather</h2>
+      <h2 className="text-3xl font-bold">天気</h2>
       <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
         <div className="flex items-baseline justify-between">
-          <h3 className="text-lg font-semibold">Forecast</h3>
-          <span className="text-sm text-slate-400">City: {query}</span>
+          <h3 className="text-lg font-semibold">予報</h3>
+          <span className="text-sm text-slate-400">都市: {query}</span>
         </div>
-        {status.state === "loading" && <p className="text-slate-300">Loading...</p>}
+        {status.state === "loading" && <p className="text-slate-300">取得中...</p>}
         {status.state === "success" && (
           <ul className="mt-4 divide-y divide-slate-800">
             {status.items.map((item, index) => (

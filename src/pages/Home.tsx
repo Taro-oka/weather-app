@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 export default function Home() {
   return (
     <section className="space-y-4">
-      <h2 className="text-3xl font-bold">Home</h2>
+      <h2 className="text-3xl font-bold">ホーム</h2>
       <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
-        <h3 className="text-lg font-semibold">Cities</h3>
+        <h3 className="text-lg font-semibold">都市</h3>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
           {[
             { label: "東京", query: "Tokyo" },
@@ -25,7 +25,7 @@ export default function Home() {
         </ul>
       </div>
       <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
-        <h3 className="text-lg font-semibold">Error Demo</h3>
+        <h3 className="text-lg font-semibold">エラーデモ</h3>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
           <li>
             <Link
