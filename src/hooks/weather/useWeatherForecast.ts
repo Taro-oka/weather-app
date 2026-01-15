@@ -82,5 +82,5 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
     fetchWeather();
   }, [fetchWeather]);
 
-  return status;
+  return { status };
 }
