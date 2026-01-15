@@ -1,99 +1,19 @@
-import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getWeather } from "@/api/weather";
+import { useWeatherForecast } from "@/hooks/weather/useWeatherForecast";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import "dayjs/locale/ja";
-import axios from "axios";
 
-type WeatherItem = {
-  dt: number;
-  temp: number;
-  icon: string | null;
-};
-
-type Status =
-  | { state: "idle" }
-  | { state: "loading" }
-  | { state: "success"; city: string; items: WeatherItem[] }
-  | { state: "error"; message: string; code: "not_found" | "client" | "server" };
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("ja");
 
 export default function Weather() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "Tokyo";
   const forcedError = searchParams.get("forceError");
-  const [status, setStatus] = useState<Status>({ state: "idle" });
-
-  dayjs.extend(utc);
-  dayjs.extend(timezone);
-  dayjs.locale("ja");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchWeather = async () => {
-      setStatus({ state: "loading" });
-      if (forcedError === "500") {
-        setStatus({
-          state: "error",
-          message: "サーバーで問題が発生しました",
-          code: "server",
-        });
-        return;
-      }
-      try {
-        const data = await getWeather({ q: query });
-        if (!isMounted) return;
-        const items = data.list.map((entry) => ({
-          dt: entry.dt,
-          temp: entry.main.temp,
-          icon: entry.weather[0]?.icon ?? null,
-        }));
-        setStatus({
-          state: "success",
-          city: data.city.name,
-          items,
-        });
-      } catch (error) {
-        if (!isMounted) return;
-        if (axios.isAxiosError(error)) {
-          const status = error.response?.status;
-          if (status === 404) {
-            setStatus({
-              state: "error",
-              message: "見つかりません",
-              code: "not_found",
-            });
-          } else if (status && status >= 400 && status < 500) {
-            setStatus({
-              state: "error",
-              message: "リクエストに問題があります",
-              code: "client",
-            });
-          } else {
-            setStatus({
-              state: "error",
-              message: "サーバーで問題が発生しました",
-              code: "server",
-            });
-          }
-          return;
-        }
-        setStatus({
-          state: "error",
-          message: "不明なエラーが発生しました",
-          code: "server",
-        });
-      }
-    };
-
-    fetchWeather();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [query, forcedError]);
+  const status = useWeatherForecast({ query, forcedError });
 
   if (status.state === "error") {
     const statusCode = status.code === "not_found" ? 404 : status.code === "client" ? 400 : 500;
