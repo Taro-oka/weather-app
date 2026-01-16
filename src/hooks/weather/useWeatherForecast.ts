@@ -2,12 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { getWeather } from "@/api/weather";
-
-type WeatherItem = {
-  dt: number;
-  temp: number;
-  icon: string | null;
-};
+import { useWeatherCache } from "@/hooks/weather/useWeatherCache";
+import { WeatherItem } from "./types";
 
 type Status =
   | { state: "idle" }
@@ -20,21 +16,9 @@ type UseWeatherForecastParams = {
   forcedError: string | null;
 };
 
-type WeatherCacheEntry = {
-  fetchedAt: number;
-  city: string;
-  items: WeatherItem[];
-};
-
-const THREE_HOURS_SECONDS = 3 * 60 * 60;
-const weatherCache = new Map<string, WeatherCacheEntry>();
-
-function getTimeBucket(timestamp: number) {
-  return Math.floor(dayjs.utc(timestamp).unix() / THREE_HOURS_SECONDS);
-}
-
 export function useWeatherForecast({ query, forcedError }: UseWeatherForecastParams) {
   const [status, setStatus] = useState<Status>({ state: "idle" });
+  const { getCached, setCached } = useWeatherCache();
 
   const fetchWeather = useCallback(async () => {
     if (forcedError === "500") {
@@ -47,8 +31,8 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
     }
 
     const now = dayjs.utc().valueOf();
-    const cached = weatherCache.get(query);
-    if (cached && getTimeBucket(cached.fetchedAt) === getTimeBucket(now)) {
+    const cached = getCached(query, now);
+    if (cached) {
       setStatus({
         state: "success",
         city: cached.city,
@@ -66,7 +50,7 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
         temp: entry.main.temp,
         icon: entry.weather[0]?.icon ?? null,
       }));
-      weatherCache.set(query, { fetchedAt: now, city: data.city.name, items });
+      setCached(query, { fetchedAt: now, city: data.city.name, items });
       setStatus({
         state: "success",
         city: data.city.name,
@@ -102,7 +86,7 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
         code: "server",
       });
     }
-  }, [forcedError, query, setStatus]);
+  }, [forcedError, getCached, query, setCached, setStatus]);
 
   useEffect(() => {
     fetchWeather();
