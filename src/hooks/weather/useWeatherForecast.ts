@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 import { getWeather } from "@/api/weather";
 
 type WeatherItem = {
@@ -19,12 +20,23 @@ type UseWeatherForecastParams = {
   forcedError: string | null;
 };
 
+type WeatherCacheEntry = {
+  fetchedAt: number;
+  city: string;
+  items: WeatherItem[];
+};
+
+const THREE_HOURS_SECONDS = 3 * 60 * 60;
+const weatherCache = new Map<string, WeatherCacheEntry>();
+
+function getTimeBucket(timestamp: number) {
+  return Math.floor(dayjs.utc(timestamp).unix() / THREE_HOURS_SECONDS);
+}
+
 export function useWeatherForecast({ query, forcedError }: UseWeatherForecastParams) {
   const [status, setStatus] = useState<Status>({ state: "idle" });
 
   const fetchWeather = useCallback(async () => {
-    setStatus({ state: "loading" });
-
     if (forcedError === "500") {
       setStatus({
         state: "error",
@@ -34,6 +46,19 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
       return;
     }
 
+    const now = dayjs.utc().valueOf();
+    const cached = weatherCache.get(query);
+    if (cached && getTimeBucket(cached.fetchedAt) === getTimeBucket(now)) {
+      setStatus({
+        state: "success",
+        city: cached.city,
+        items: cached.items,
+      });
+      return;
+    }
+
+    setStatus({ state: "loading" });
+
     try {
       const data = await getWeather({ q: query });
       const items = data.list.map((entry) => ({
@@ -41,6 +66,7 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
         temp: entry.main.temp,
         icon: entry.weather[0]?.icon ?? null,
       }));
+      weatherCache.set(query, { fetchedAt: now, city: data.city.name, items });
       setStatus({
         state: "success",
         city: data.city.name,
