@@ -57,34 +57,35 @@ export function useWeatherForecast({ query, forcedError }: UseWeatherForecastPar
         items,
       });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const statusCode = error.response?.status;
-        if (statusCode === 404) {
-          setStatus({
-            state: "error",
-            message: "見つかりません",
-            code: "not_found",
-          });
-        } else if (statusCode && statusCode >= 400 && statusCode < 500) {
-          setStatus({
-            state: "error",
-            message: "リクエストに問題があります",
-            code: "client",
-          });
-        } else {
-          setStatus({
-            state: "error",
-            message: "サーバーで問題が発生しました",
-            code: "server",
-          });
-        }
+      if (!axios.isAxiosError(error)) {
+        setStatus({
+          state: "error",
+          message: "不明なエラーが発生しました",
+          code: "server",
+        });
         return;
       }
-      setStatus({
-        state: "error",
-        message: "不明なエラーが発生しました",
-        code: "server",
-      });
+
+      const statusCode = error.response?.status;
+      if (statusCode === 404) {
+        setStatus({
+          state: "error",
+          message: "見つかりません",
+          code: "not_found",
+        });
+      } else if (statusCode && statusCode >= 400 && statusCode < 500) {
+        setStatus({
+          state: "error",
+          message: "リクエストに問題があります",
+          code: "client",
+        });
+      } else {
+        setStatus({
+          state: "error",
+          message: "サーバーで問題が発生しました",
+          code: "server",
+        });
+      }
     }
   }, [forcedError, getCached, query, setCached, setStatus]);
 
