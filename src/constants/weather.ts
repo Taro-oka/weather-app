@@ -6,5 +6,5 @@ export const CITY_OPTIONS = [
 ] as const;
 
 export const CITY_LABELS = Object.fromEntries(
-  CITY_OPTIONS.map((city) => [city.query.toLowerCase(), city.label]),
+  CITY_OPTIONS.map((city) => [city.query.toLowerCase(), city.label])
 );
