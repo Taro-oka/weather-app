@@ -13,6 +13,7 @@ OpenWeather APIを使用し、指定した都市の天気を検索して表示�
 プロジェクトrootで以下を実行します。
 
 ```bash
+npm install
 npm run dev
 ```
 
